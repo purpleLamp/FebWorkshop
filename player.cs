@@ -11,32 +11,27 @@ public class player : MonoBehaviour
     public Rigidbody2D rb;
     public SpriteRenderer sp;
 
-    private bool jumpRequest;
+    private bool jumpPressed;
     public float jumpPower;
-    private float maxJumpDir = 0.1f;
-    private float jumpTime;
-
-    public bool grabPressed;
-    public AudioClip jumpClip;
 
     private void OnDrawGizmos()
     {
-        Debug.DrawRay(new Vector2(transform.position.x - 0.4f, transform.position.y - 0.6f), new Vector2(.8f, 0), Color.red);
+        Vector2 startPos = new Vector2(transform.position.x - 0.4f, transform.position.y - 0.6f);
+        Vector2 endPos = new Vector2(transform.position.x + 0.4f, transform.position.y - 0.6f);
+
+        Debug.DrawLine(startPos, endPos, Color.red);
     }
 
     void Update()
     {
         rb.velocity = new Vector2(input.x * moveSpeed, rb.velocity.y);
 
-        if (jumpTime > maxJumpDir) jumpRequest = false;
+        if (jumpPressed) rb.velocity = new Vector2(rb.velocity.x, jumpPw);
+        if (!Grounded()) jumpPressed = false;
 
         if (input.x < 0f) sp.flipX = true;
         if (input.x > 0f) sp.flipX = false;
 
-        if (transform.position.y < -20f)
-        {
-            SceneManager.LoadScene("Level");
-        }
     }
 
     public void move(InputAction.CallbackContext context)
@@ -48,28 +43,20 @@ public class player : MonoBehaviour
     {
         if (context.performed && Grounded())
         {
-            AudioInterface.instance.PlayClip(jumpClip, transform, 0.3f);
-            jumpRequest = true;
-            jumpTime = 0;
+            jumpPressed = true;
         }
 
         if (context.canceled)
         {
-            jumpRequest = false;
-        }
-    }
-    private void FixedUpdate()
-    {
-        if (jumpRequest)
-        {
-            rb.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
-            jumpTime += Time.deltaTime;
+            jumpPressed = false;
         }
     }
 
     private bool Grounded()
     {
-        return Physics2D.Raycast(new Vector2(transform.position.x - 0.4f, transform.position.y - 0.6f), Vector2.right, 0.8f);
+        Vector2 startPos = new Vector2(transform.position.x - 0.4f, transform.position.y - 0.6f);
+
+        return Physics2D.Raycast(startPos, Vector2.right, 0.8f);
     }
 
 }
