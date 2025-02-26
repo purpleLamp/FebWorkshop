@@ -9,30 +9,29 @@ public class UIManager : MonoBehaviour
 {
     public float peopleScore = 0;
     public float totalPeople;
-    public float whenToIncrement;
     public TextMeshProUGUI scoreText;
     public GameObject[] peoples;
 
     private bool hasIncreased;
-    //public AudioClip scoreUpSound;
+    public AudioClip scoreUpSound;
 
     void Update()
     {
-        totalPeople = GameObject.FindGameObjectsWithTag("people").Length; //This string should be the same as the tag you applied to the people
-        if (whenToIncrement > 0) whenToIncrement = totalPeople - 2;
+        totalPeople = GameObject.FindGameObjectsWithTag("people").Length;
 
-        if (totalPeople == whenToIncrement && !hasIncreased)
+        if (totalPeople == 0 && !hasIncreased)
         {
-            //AudioInterface.instance.PlayClip(scoreUpSound, transform, 0.05f);
+            AudioInterface.instance.PlayClip(scoreUpSound, transform, 0.05f);
 
             peopleScore++;
             hasIncreased = true;
+
             Vector3 peoplePlace = new Vector3(Random.Range(-10, 10), Random.Range(0, 7), 0);
             Vector3 peoplePlace2 = new Vector3(Random.Range(-10, 10), Random.Range(0, 7), 0);
             Vector3 rot1 = new Vector3(0, 0, Random.Range(0, 360));
             Vector3 rot3 = new Vector3(0, 0, 0);
 
-            Vector3[] rotArray = { rot1, rot3, rot3, rot3, rot3 };
+            Vector3[] rotArray = { rot1, rot1, rot3, rot3, rot3 };
             Instantiate(peoples[0], peoplePlace, Quaternion.Euler(rotArray[Random.Range(0,4)]));
             Instantiate(peoples[1], peoplePlace2, Quaternion.Euler(rotArray[Random.Range(0, 4)]));
 
@@ -43,7 +42,7 @@ public class UIManager : MonoBehaviour
         }
 
 
-        //scoreText.text = "couples: " + peopleScore;
+        scoreText.text = "couples: " + peopleScore;
 
     }
 }
